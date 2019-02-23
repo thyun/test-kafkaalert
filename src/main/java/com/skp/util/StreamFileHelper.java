@@ -8,32 +8,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileHelper {
-	private static final Logger logger = LoggerFactory.getLogger(FileHelper.class);
+public class StreamFileHelper {
+	private static final Logger logger = LoggerFactory.getLogger(StreamFileHelper.class);
 
-	public static String getFile(String relativePath) {
-		InputStream is = getInputStream(relativePath);
-		return readInputStream(is);
+	public static Stream<String> getFile(String relativePath) {
+		if (existFromPath(relativePath))
+			return getFileFromPath(relativePath);
+		return getFileFromResource(relativePath);
 	}
 
-	public static String getFileFromPath(String relativePath) {
-		InputStream is = getInputStreamFromPath(relativePath);
-		return readInputStream(is);
+	public static Stream<String> getFileFromPath(String relativePath) {
+		try {
+			String workDir = System.getProperty("user.dir");
+	        String path = workDir + "/" + relativePath;
+			return Files.lines(Paths.get(path));
+		} catch (IOException e) {
+//			e.printStackTrace();
+		}
+		return Stream.empty();
 	}
 
-	public static String getFileFromResource(String relativePath) {
-		InputStream is = getInputStreamFromResource(relativePath);
-		return readInputStream(is);
+	public static Stream<String> getFileFromResource(String relativePath) {
+		try {
+			InputStream is = FileHelper.class.getClassLoader().getResourceAsStream(relativePath);
+			return new BufferedReader(new InputStreamReader(is, "UTF-8")).lines();
+		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+		}
+		return Stream.empty();
 	}
 
+	/*
     public static InputStream getInputStream(String relativePath) {
         String workDir = System.getProperty("user.dir");
         String path = workDir + "/" + relativePath;
@@ -47,7 +62,7 @@ public class FileHelper {
 //          logger.debug("getConfigInputStream config from file: " + path);
         }
 
-        inputStream = FileHelper.class.getClassLoader().getResourceAsStream(relativePath);
+        inputStream = FileStreamHelper.class.getClassLoader().getResourceAsStream(relativePath);
 //        	logger.debug("getConfigInputStream config from resource: " + file);
         return inputStream;
     }
@@ -68,7 +83,7 @@ public class FileHelper {
 
     public static InputStream getInputStreamFromResource(String relativePath) {
     	InputStream inputStream = null;
-        inputStream = FileHelper.class.getClassLoader().getResourceAsStream(relativePath);
+        inputStream = FileStreamHelper.class.getClassLoader().getResourceAsStream(relativePath);
         return inputStream;
     }
 
@@ -153,9 +168,11 @@ public class FileHelper {
             logger.error(e.toString());
         }
     	return lineList;
-	}
+	} */
 
-	public static boolean exist(String path) {
+	public static boolean existFromPath(String relativePath) {
+		String workDir = System.getProperty("user.dir");
+        String path = workDir + "/" + relativePath;
 		return (Files.exists(Paths.get(path)));
 	}
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 public class ConfigProcess {
-	ConfigScheme scheme;
+	ArrayList<Object> schemes;
 	ArrayList<Object> alarms;
 	ArrayList<Object> notification_groups;
 

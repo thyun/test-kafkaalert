@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.skp.kafkaalert.config.Config;
 import com.skp.kafkaalert.config.ConfigItem;
+import com.skp.kafkaalert.config.ConfigProcess;
+import com.skp.kafkaalert.config.ConfigScheme;
+import com.skp.kafkaalert.event.Alarm;
 import com.skp.kafkaalert.event.LogEvent;
 import com.skp.kafkaalert.output.OutputProcessor;
 
@@ -21,9 +24,8 @@ public class ProcessProcessor {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final Config config;
-/*	ProcessMatch processMatch = new ProcessMatch();
-	ProcessDate processDate = new ProcessDate();
-	ProcessMetrics processMetrics = new ProcessMetrics(); */
+	ProcessAlarm processAlarm = new ProcessAlarm();
+
 	List<ProcessConsumer> consumerList = new ArrayList<>();
 	ExecutorService executor;
 	OutputProcessor outputProcessor;
@@ -83,8 +85,12 @@ public class ProcessProcessor {
 	}
 
 	private LogEvent process(Config config, LogEvent e) {
-		logger.debug("process() start");
+//		logger.debug("process() start: e=" + e);
 		LogEvent out=e;
+
+
+		ConfigProcess cprocess = config.getProcess();
+		processAlarm.process(cprocess, e);
 
 /*		ConfigProcess configProcess = config.getConfigProcess();
 		List<ConfigItem> configProcessList = configProcess.getConfigProcessList();
@@ -104,8 +110,8 @@ public class ProcessProcessor {
 //			if (r != true)
 //				return;
 		} */
-		logger.debug("ProcessProcessor.process() end");
-		return out;
+//		logger.debug("ProcessProcessor.process() end");
+		return null;
 	}
 
 }

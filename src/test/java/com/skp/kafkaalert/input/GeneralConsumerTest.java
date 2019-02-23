@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.skp.kafkaalert.input.kafka.GeneralConsumer;
-import com.skp.util.FileHelper;
-import com.skp.util.FileHelper.LineReadCallback;
+import com.skp.util.StreamFileHelper;
 
 public class GeneralConsumerTest {
 	private static final Logger logger = LoggerFactory.getLogger(GeneralConsumerTest.class);
 	static String topic = "my_topic";
+	static long offset;
 //	MockConsumer<String, String> kafkaConsumer;
 	GeneralConsumer.ConsumerCallback callback = new GeneralConsumer.ConsumerCallback() {
 		@Override
@@ -27,21 +27,21 @@ public class GeneralConsumerTest {
 			}
 		}
     };
-	
+
 	@Before
 	public void setUp() {
 /*	    kafkaConsumer = new MockConsumer<String, String>(OffsetResetStrategy.EARLIEST);
-	    
+
 	    // Set topic offset
 	    HashMap<TopicPartition, Long> beginningOffsets = new HashMap<>();
 	    beginningOffsets.put(new TopicPartition(topic, 0), 0L);
 	    kafkaConsumer.updateBeginningOffsets(beginningOffsets); */
 	}
-	
+
 	@Test
 	public void testConsumer() throws IOException {
 		MockConsumer<String, String> mockConsumer = new MockConsumer<String, String>(OffsetResetStrategy.EARLIEST);
-				
+
 	    // Setup consumer
 	    GeneralConsumer gconsumer = new GeneralConsumer(1, mockConsumer, callback);
 	    gconsumer.applyMockConsumer(mockConsumer, topic);
@@ -49,7 +49,7 @@ public class GeneralConsumerTest {
 
 	    // Create record
 	    offset = 0;
-	    mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, 
+	    mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,
 	    				offset++, "mykey", "myvalue0"));
 	    mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,
 	                    offset++, "mykey", "myvalue1"));
@@ -63,76 +63,82 @@ public class GeneralConsumerTest {
 	    // Consume
 	    gconsumer.consume();
 	}
-	
+
 	@Test
 	public void testConsumerAccessLogPlain() throws IOException {
 		MockConsumer<String, String> mockConsumer = new MockConsumer<String, String>(OffsetResetStrategy.EARLIEST);
-		
+
 	    // Setup consumer
 	    GeneralConsumer gconsumer = new GeneralConsumer(1, mockConsumer, callback);
 	    gconsumer.applyMockConsumer(mockConsumer, topic);
 //	    gconsumer.assign(topic, Arrays.asList(0));
 
 	    // Create record
-	    generateSamplePlain(mockConsumer, topic);
-/*	    offset = 0;
-		ResourceHelper.processResource("com/skp/logmetric/access.log", new LineReadCallback() {
-			@Override
-			public void processLine(String line) {
-				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, 
-	    				offset++, "mykey", line));
-			} 
-		}); */
+	    offset = 0;
+	    StreamFileHelper.getFileFromResource("access.log")
+	    	.forEach(line -> mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, offset++, "mykey", line))
+	    	);
+//	    generateSamplePlain(mockConsumer, topic);
 
 	    // Consume
 	    gconsumer.consume();
 	}
-	
+
 	@Test
 	public void testConsumerAccessLogJson() throws IOException {
 		MockConsumer<String, String> mockConsumer = new MockConsumer<String, String>(OffsetResetStrategy.EARLIEST);
-		
+
 	    // Setup consumer
 	    GeneralConsumer gconsumer = new GeneralConsumer(1, mockConsumer, callback);
 	    gconsumer.applyMockConsumer(mockConsumer, topic);
 //	    gconsumer.subscribe(Arrays.asList(topic));
-	    
+
 /*	    // Setup Kafka MockConsumer
-	    kafkaConsumer.rebalance(Collections.singletonList(new TopicPartition(topic, 0)));
-	    kafkaConsumer.seek(new TopicPartition(topic, 0), 0);
-//	    runnableConsumer.assign(topic, Arrays.asList(0)); */
+	    mockConsumer.rebalance(Collections.singletonList(new TopicPartition(topic, 0)));
+	    mockConsumer.seek(new TopicPartition(topic, 0), 0);
+//	    gconsumer.assign(topic, Arrays.asList(0)); */
 
 	    // Create record
-	    generateSampleJson(mockConsumer, topic);
+	    offset = 0;
+	    StreamFileHelper.getFileFromResource("access.log")
+	    	.forEach(line -> {
+	    		mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,	offset++, "mykey", produceJson("web01", line)));
+	    		mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,	offset++, "mykey", produceJson("web02", line)));
+	    	});
+//	    generateSampleJson(mockConsumer, topic);
 
 	    // Consume
 	    gconsumer.consume();
 	}
-	
-	static long offset;
-	public static void generateSamplePlain(MockConsumer<String, String> mockConsumer, String topic) {
+
+	public static MockConsumer<String, String> createMockConsumer() {
+		MockConsumer<String, String> mockConsumer = new MockConsumer<String, String>(OffsetResetStrategy.EARLIEST);
+	    return mockConsumer;
+	}
+
+/*	public static void generateSamplePlain(MockConsumer<String, String> mockConsumer, String topic) {
 		offset = 0;
 		FileHelper.processFileFromResource("access.log", new LineReadCallback() {
 			@Override
 			public void processLine(String line) {
-				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, 
+				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,
 	    				offset++, "mykey", line));
-			} 
+			}
 		});
-	}
-	
-	public static void generateSampleJson(MockConsumer<String, String> mockConsumer, String topic) {
+	} */
+
+/*	public static void generateSampleJson(MockConsumer<String, String> mockConsumer, String topic) {
 	    offset = 0;
 		FileHelper.processFileFromResource("access.log", new LineReadCallback() {
 			@Override
 			public void processLine(String line) {
-				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, 
+				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,
 	    				offset++, "mykey", produceJson("web01", line)));
-				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0, 
+				mockConsumer.addRecord(new ConsumerRecord<String, String>(topic, 0,
 	    				offset++, "mykey", produceJson("web02", line)));
 			}
 		});
-	}
+	} */
 
 	public static String produceJson(String host, String line) {
 		JSONObject j = new JSONObject();

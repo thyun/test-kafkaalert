@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -15,10 +16,12 @@ import org.slf4j.LoggerFactory;
 
 import com.skp.kafkaalert.config.Config;
 import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.input.GeneralConsumerTest;
 import com.skp.kafkaalert.process.ProcessMetricsService;
 import com.skp.kafkaalert.process.ProcessProcessor;
 import com.skp.kafkaalert.process.ProcessQueue;
 import com.skp.util.FileHelper;
+import com.skp.util.StreamFileHelper;
 import com.skp.util.FileHelper.LineReadCallback;
 
 public class ProcessProcessorTest {
@@ -77,9 +80,8 @@ public class ProcessProcessorTest {
 	 *   "byteSent.100000": 1
 	 * }
 	 */
-	@Ignore
 	@Test
-	public void testSampleJson() throws IOException, ParseException {
+	public void testSystemMetric() throws IOException, ParseException {
 		// Get config
 		Config config = Config.createFromResource("process.conf", "regex.conf");
 
@@ -87,19 +89,59 @@ public class ProcessProcessorTest {
 	    ProcessProcessor pprocess = new ProcessProcessor(config);
 	    pprocess.init();
 
-		// Generate sample log
-		generateSampleJson();
+		// Generate sample system metric
+		generateSampleSystemMetric();
 
 		// Process
-		for (int i=0; i<200; i++)
+		int size = ProcessQueue.getInstance().size();
+		for (int i=0; i<size; i++)
 			pprocess.process();
+		logger.debug("Processed queue size=" + size);
 
-		// Export
+/*		// Export
 		ProcessMetricsService service = new ProcessMetricsService();
 	    service.export(0);
-	    service.export(0);
+	    service.export(0); */
 	}
 
+	public static void generateSampleSystemMetric() {
+		offset = 0;
+		StreamFileHelper.getFileFromResource("sample-system-metric.log")
+		.forEach(line -> {
+			generateLogEventList(line);
+		});
+	}
+
+	public static void generateSampleAccessMetric() {
+		offset = 0;
+		StreamFileHelper.getFileFromResource("sample-access-metric.log")
+		.forEach(line -> {
+			generateLogEventList(line);
+		});
+	}
+
+	// TODO JSONArray parsing 후 다시 String 변환하여 LogEvent 생성하므로 비효율적
+	private static void generateLogEventList(String line) {
+		List<LogEvent> elist = new ArrayList<>();
+
+		// Make LogEvent list
+		JSONArray ja = new JSONArray(line);
+		for (int i=0; i<ja.length(); i ++) {
+			JSONObject jo = ja.getJSONObject(i);
+			elist.add(new LogEvent(jo.toString()));
+		}
+
+		// Put to queue
+		try {
+			ProcessQueue.getInstance().put(elist);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	// TODO Stream 사용하여 변경 - 참조 GeneralConsumerTest
 	static long offset;
 	public static void generateSampleJson() {
 	    offset = 0;

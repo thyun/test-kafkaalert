@@ -36,8 +36,7 @@ public class ConfigTest {
 		Config config = Config.createFromResource("process.conf", "regex.conf");
 		logger.debug("config=" + config);
 
-		ConfigScheme scheme = config.getProcess().getScheme();
-		logger.debug("scheme=" + scheme);
+		logger.debug("schemes=" + config.getProcess().getSchemes());
 	}
 
 	@Test
@@ -49,7 +48,7 @@ public class ConfigTest {
 		fvs.add(new CommonFieldValue("f2", "v2"));
 
 		scheme.setMetrics(fvs);
-		configProcess.setScheme(scheme);
+//		configProcess.setScheme(scheme);
 
 		Config config = new Config();
 		config.setInput(configInput);

@@ -1,20 +1,17 @@
 package com.skp.kafkaalert.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.process.ProcessScheme;
 import com.skp.util.FileHelper;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 @Data
 public class Config {
@@ -29,7 +26,24 @@ public class Config {
 		if (!check(ConfigPath.getProcessConfPath(), ConfigPath.getRegexConfPath()))
 			return null;
 
-		return createFromResource(ConfigPath.getProcessConfPath(), ConfigPath.getRegexConfPath());
+		String processConfStr = FileHelper.getFileFromPath(ConfigPath.getProcessConfPath());
+		List<String> regexConfStrList = FileHelper.getFileLineListFromResource(ConfigPath.getRegexConfPath());
+
+		try {
+			Config config = objectMapper.readValue(processConfStr, Config.class);
+			config.setRegex(ConfigRegex.create(regexConfStrList));
+			return config;
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private static boolean check(String processConfPath, String regexConfPath) {
@@ -38,6 +52,9 @@ public class Config {
 		return true;
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////
+	// For test only
+	/////////////////////////////////////////////////////////////////////////////////
 	public static Config createFromResource(String processConfPath, String regexConfPath) {
 		if (!checkFromResource(processConfPath, regexConfPath))
 			return null;
@@ -66,6 +83,5 @@ public class Config {
 			return false;
 		return true;
 	}
-
 
 }
