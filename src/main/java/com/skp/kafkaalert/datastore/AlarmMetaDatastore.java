@@ -1,7 +1,9 @@
 package com.skp.kafkaalert.datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ public class AlarmMetaDatastore {
 	static AlarmMetaDatastore instance = null;
 
 	ConcurrentHashMap<String, AlarmLookup> lookupMap = new ConcurrentHashMap<>();
+	List<AlarmLookup> lookupList;
 	ConcurrentHashMap<String, Alarm> alarmMap = new ConcurrentHashMap<>();
 	public static AlarmMetaDatastore getInstance() {
 		if (instance == null) {
@@ -31,6 +34,7 @@ public class AlarmMetaDatastore {
 			Alarm alarm = Alarm.create(o);
 			buildAlarmMeta(alarm);
 		}
+		lookupList = lookupMap.values().stream().collect(Collectors.toList());
 
 	}
 

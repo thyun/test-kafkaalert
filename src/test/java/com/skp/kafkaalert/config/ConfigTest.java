@@ -42,7 +42,7 @@ public class ConfigTest {
 	@Ignore
 	@Test
 	public void testConfig1() throws IOException {
-		ConfigInput configInput = new ConfigInput("type1", "broker1", "topic1", "group1");
+		ConfigInput configInput = new ConfigInput();
 		ConfigProcess configProcess = new ConfigProcess();
 		ConfigScheme scheme = new ConfigScheme();
 		ArrayList<CommonFieldValue> fvs = new ArrayList<CommonFieldValue>();

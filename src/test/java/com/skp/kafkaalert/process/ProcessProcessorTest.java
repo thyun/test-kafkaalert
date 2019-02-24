@@ -36,7 +36,7 @@ public class ProcessProcessorTest {
 	public void testAlarmMeta() {
 		Config config = Config.createFromResource("process.conf", "regex.conf");
 		AlarmMetaDatastore.getInstance().build(config.getProcess());
-		logger.debug("lookupMap=" + AlarmMetaDatastore.getInstance().getLookupMap());
+		logger.debug("lookupList=" + AlarmMetaDatastore.getInstance().getLookupList());
 		logger.debug("alarmMap=" + AlarmMetaDatastore.getInstance().getAlarmMap());
 	}
 

@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skp.kafkaalert.config.CommonFieldValue;
 import com.skp.kafkaalert.config.ConfigProcess;
+import com.skp.kafkaalert.datastore.AlarmMetaDatastore;
 import com.skp.kafkaalert.datastore.AlarmStatusDatastore;
 import com.skp.kafkaalert.event.Alarm;
+import com.skp.kafkaalert.event.AlarmLookup;
 import com.skp.kafkaalert.event.AlarmRule;
 import com.skp.kafkaalert.event.AlarmStatus;
 import com.skp.kafkaalert.event.LogEvent;
@@ -92,7 +94,17 @@ public class ProcessAlarm {
 	private List<Alarm> lookupAlarms(ConfigProcess cprocess, LogEvent e) {
 		ArrayList<Alarm> alarms = new ArrayList<>();
 
-		if (!e.has("collectd_type"))
+		// Field keys
+		for (AlarmLookup lookup: AlarmMetaDatastore.getInstance().getLookupList()) {
+			if (lookup.hasFields(e)) {
+				String valueKey = lookup.getValueKey(e);
+				Alarm alarm = AlarmMetaDatastore.getInstance().getAlarmMap().get(valueKey);
+				if (alarm != null)
+					alarms.add(alarm);
+			}
+		}
+
+/*		if (!e.has("collectd_type"))
 			return alarms;
 		if (!e.getString("collectd_type").equals("if_octets"))
 			return alarms;
@@ -105,13 +117,13 @@ public class ProcessAlarm {
 		String instance = fv.getValue();
 		if (instance.equals(e.getString(fv.getField()))
 				&& e.getString("host").startsWith("SMONi-web"))
-			alarms.add(alarm);
+			alarms.add(alarm); */
 		return alarms;
 	}
 
 	// TODO multiple scheme 지원하도록 개선
-	public List<ProcessScheme> lookupProcessSchemes(ConfigProcess cprocess, LogEvent e) {
-		return null;
+//	public List<ProcessScheme> lookupProcessSchemes(ConfigProcess cprocess, LogEvent e) {
+//		return null;
 /*		ArrayList<ProcessScheme> pschemes = new ArrayList<>();
 		ConfigScheme cscheme = cprocess.getScheme();
 
@@ -123,7 +135,7 @@ public class ProcessAlarm {
 		}
 		pschemes.add(new ProcessScheme(cscheme));
 		return pschemes; */
-	}
+//	}
 
 
 }
