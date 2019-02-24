@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,10 @@ public class ConfigTest {
 
 		Config config = Config.createFromResource("process.conf", "regex.conf");
 		logger.debug("config=" + config);
-
-		logger.debug("schemes=" + config.getProcess().getSchemes());
+//		logger.debug("schemes=" + config.getProcess().getSchemes());
 	}
 
+	@Ignore
 	@Test
 	public void testConfig1() throws IOException {
 		ConfigInput configInput = new ConfigInput("type1", "broker1", "topic1", "group1");
@@ -58,7 +59,6 @@ public class ConfigTest {
 
 		String json = objectMapper.writeValueAsString(config);
 		logger.debug("json=" + json);
-
 		logger.debug("config=" + objectMapper.readValue(json, Config.class));
 	}
 

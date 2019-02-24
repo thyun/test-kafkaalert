@@ -1,0 +1,19 @@
+TODO
+- AlarmMetaDatastore.alarmMap 동일 key에 multiple alarm 저장할 수 있어야 함.
+- Scheme내 targets를 분리?
+- Target에 hostname* 설정 제공? AAA01~10 과 같이 입력하면 10개 hostname 생성하는 방식
+- Scheme 정의하지 말고 generation하는 방식으로.
+- Threshod에 Kilo, Mega, Giga 사용할 수 있게.
+- 최상위 json field만 가능한데, inner json field도 사용 가능하게.
+- Alarm is_used, Rule is_used 처리
+
+- PagerDuty
+- Fix SLF4J multiple bindings
+
+DONE
+- Output file sample
+	"output": {
+		"type": "file",
+		"path": "output-process.log",
+		"max": 1000000
+	}

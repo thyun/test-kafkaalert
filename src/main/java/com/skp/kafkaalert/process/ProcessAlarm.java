@@ -23,10 +23,6 @@ public class ProcessAlarm {
 		List<Alarm> alarms = lookupAlarms(cprocess, e);
 		for (Alarm alarm: alarms)
 			processAlarm(cprocess, e, alarm);
-
-/*		List<ProcessScheme> pschemes = lookupProcessSchemes(cprocess, e);
-		for (ProcessScheme pscheme : pschemes)
-			process(cprocess, pscheme, e); */
 	}
 
 	private void processAlarm(ConfigProcess cprocess, LogEvent e, Alarm alarm) {
@@ -101,8 +97,9 @@ public class ProcessAlarm {
 		if (!e.getString("collectd_type").equals("if_octets"))
 			return alarms;
 
-		Object o = cprocess.getAlarms().get(0);
-		Alarm alarm = objectMapper.convertValue(o, Alarm.class);
+		Alarm alarm = Alarm.create(cprocess.getAlarms().get(1));
+//		Object o = cprocess.getAlarms().get(1);
+//		Alarm alarm = objectMapper.convertValue(o, Alarm.class);
 
 		CommonFieldValue fv = alarm.getScheme().getInstance();
 		String instance = fv.getValue();
