@@ -1,4 +1,4 @@
-package com.skp.kafkaalert.event;
+package com.skp.kafkaalert.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ public class AlarmScheme {
 	CommonFieldValue instance;
 	CommonFieldValue value;
 
-	public List<AlarmLookup> buildAlarmLookupKey() {
-		HashMap<String, AlarmLookup> map = new HashMap<>();
+	public List<AlarmFieldKey> buildAlarmFieldKey() {
+		HashMap<String, AlarmFieldKey> map = new HashMap<>();
 //		ArrayList<AlarmSchemeMeta> list = new ArrayList<>();
 
 		// Get metric keys
@@ -33,7 +33,7 @@ public class AlarmScheme {
 
 			ArrayList<String> fields = new ArrayList<String>(metricKeys);
 			fields.addAll(targetKeys);
-			AlarmLookup schemeMeta = new AlarmLookup(fields);
+			AlarmFieldKey schemeMeta = new AlarmFieldKey(fields);
 
 			map.put(schemeMeta.getKey(), schemeMeta);
 //			list.add(schemeMeta);
@@ -42,8 +42,8 @@ public class AlarmScheme {
 		return map.values().stream().collect(Collectors.toList());
 	}
 
-	public List<AlarmLookup> buildAlarmLookupValue() {
-		ArrayList<AlarmLookup> list = new ArrayList<>();
+	public List<AlarmValueKey> buildAlarmValueKey() {
+		ArrayList<AlarmValueKey> list = new ArrayList<>();
 
 		// Get metric keys
 		List<String> metricKeys = metrics.stream()
@@ -58,7 +58,7 @@ public class AlarmScheme {
 
 			ArrayList<String> values = new ArrayList<String>(metricKeys);
 			values.addAll(targetKeys);
-			AlarmLookup lookupKey = new AlarmLookup(values);
+			AlarmValueKey lookupKey = new AlarmValueKey(values);
 
 			list.add(lookupKey);
 		}

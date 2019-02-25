@@ -1,18 +1,14 @@
 package com.skp.kafkaalert.output.kafka;
 
-import org.json.JSONObject;
-
-import com.skp.kafkaalert.config.ConfigItem;
-
 import lombok.Data;
 
 @Data
-public class ConfigOutputKafka implements ConfigItem {
+public class ConfigOutputKafka {
 	String type;
 	String broker;
 	String topic;
 
-	public ConfigOutputKafka(JSONObject j) {
+/*	public ConfigOutputKafka(JSONObject j) {
 		init(j);
 	}
 
@@ -26,6 +22,6 @@ public class ConfigOutputKafka implements ConfigItem {
 	@Override
 	public void prepare() {
 
-	}
+	} */
 
 }

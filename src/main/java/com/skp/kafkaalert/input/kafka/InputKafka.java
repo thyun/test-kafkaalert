@@ -11,7 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.LogEvent;
 import com.skp.kafkaalert.input.InputPlugin;
 import com.skp.kafkaalert.input.kafka.GeneralConsumer.ConsumerCallback;
 import com.skp.kafkaalert.process.ProcessQueue;

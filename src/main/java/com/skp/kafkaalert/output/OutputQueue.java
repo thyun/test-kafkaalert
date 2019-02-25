@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.LogEvent;
 
 import lombok.Getter;
 

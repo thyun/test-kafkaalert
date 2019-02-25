@@ -1,13 +1,7 @@
 package com.skp.kafkaalert.config;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skp.kafkaalert.config.ConfigItem;
 import com.skp.kafkaalert.config.ConfigRegex;
 import com.skp.kafkaalert.config.ConfigValue;
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.LogEvent;
 import com.skp.util.FileHelper;
 
 public class ConfigTest {
@@ -44,12 +37,8 @@ public class ConfigTest {
 	public void testConfig1() throws IOException {
 		ConfigInput configInput = new ConfigInput();
 		ConfigProcess configProcess = new ConfigProcess();
-		ConfigScheme scheme = new ConfigScheme();
 		ArrayList<CommonFieldValue> fvs = new ArrayList<CommonFieldValue>();
 		fvs.add(new CommonFieldValue("f2", "v2"));
-
-		scheme.setMetrics(fvs);
-//		configProcess.setScheme(scheme);
 
 		Config config = new Config();
 		config.setInput(configInput);

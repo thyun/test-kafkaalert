@@ -1,6 +1,5 @@
 package com.skp.kafkaalert.datastore;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -9,9 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.skp.kafkaalert.config.ConfigProcess;
-import com.skp.kafkaalert.event.Alarm;
-import com.skp.kafkaalert.event.AlarmScheme;
-import com.skp.kafkaalert.event.AlarmLookup;
+import com.skp.kafkaalert.entity.Alarm;
+import com.skp.kafkaalert.entity.AlarmFieldKey;
+import com.skp.kafkaalert.entity.AlarmScheme;
+import com.skp.kafkaalert.entity.AlarmValueKey;
+
 import lombok.Data;
 
 @Data
@@ -19,8 +20,8 @@ public class AlarmMetaDatastore {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	static AlarmMetaDatastore instance = null;
 
-	ConcurrentHashMap<String, AlarmLookup> lookupMap = new ConcurrentHashMap<>();
-	List<AlarmLookup> lookupList;
+	ConcurrentHashMap<String, AlarmFieldKey> fieldKeyMap = new ConcurrentHashMap<>();
+	List<AlarmFieldKey> fieldKeyList;
 	ConcurrentHashMap<String, Alarm> alarmMap = new ConcurrentHashMap<>();
 	public static AlarmMetaDatastore getInstance() {
 		if (instance == null) {
@@ -34,30 +35,20 @@ public class AlarmMetaDatastore {
 			Alarm alarm = Alarm.create(o);
 			buildAlarmMeta(alarm);
 		}
-		lookupList = lookupMap.values().stream().collect(Collectors.toList());
+		fieldKeyList = fieldKeyMap.values().stream().collect(Collectors.toList());
 
 	}
 
 	private void buildAlarmMeta(Alarm alarm) {
 		AlarmScheme scheme = alarm.getScheme();
 
-		List<AlarmLookup> lookupKeys = scheme.buildAlarmLookupKey();
-		for (AlarmLookup lookupKey: lookupKeys)
-			lookupMap.put(lookupKey.getKey(), lookupKey);
+		List<AlarmFieldKey> fieldKeys = scheme.buildAlarmFieldKey();
+		for (AlarmFieldKey fieldKey: fieldKeys)
+			fieldKeyMap.put(fieldKey.getKey(), fieldKey);
 
-		List<AlarmLookup> lookupValues = scheme.buildAlarmLookupValue();
-		for (AlarmLookup lookupValue: lookupValues)
-			alarmMap.put(lookupValue.getKey(), alarm);
+		List<AlarmValueKey> valueKeys = scheme.buildAlarmValueKey();
+		for (AlarmValueKey valueKey: valueKeys)
+			alarmMap.put(valueKey.getKey(), alarm);
 	}
-
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-/*		for (AlarmStatus me : hashMap.values()) {
-			sb.append("\n");
-//			sb.append(me.toString());
-		} */
-		return sb.toString();
-	}
-
 
 }

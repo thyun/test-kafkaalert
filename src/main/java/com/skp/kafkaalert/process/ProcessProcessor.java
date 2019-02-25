@@ -10,11 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.skp.kafkaalert.config.Config;
-import com.skp.kafkaalert.config.ConfigItem;
 import com.skp.kafkaalert.config.ConfigProcess;
-import com.skp.kafkaalert.config.ConfigScheme;
-import com.skp.kafkaalert.event.Alarm;
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.LogEvent;
 import com.skp.kafkaalert.output.OutputProcessor;
 
 import lombok.Data;
@@ -71,6 +68,7 @@ public class ProcessProcessor {
 		ArrayList<LogEvent> outList = new ArrayList<>();
 		try {
 			List<LogEvent> elist = ProcessQueue.getInstance().take();
+//			logger.debug("elist size=" + elist.size());
 			for (LogEvent e: elist) {
 				LogEvent out = process(config, e);
 				if (out != null)
@@ -92,24 +90,6 @@ public class ProcessProcessor {
 		ConfigProcess cprocess = config.getProcess();
 		processAlarm.process(cprocess, e);
 
-/*		ConfigProcess configProcess = config.getConfigProcess();
-		List<ConfigItem> configProcessList = configProcess.getConfigProcessList();
-		for (ConfigItem item : configProcessList) {
-			boolean r=true;
-			if (item instanceof ConfigProcessMatch)
-				r = processMatch.process((ConfigProcessMatch) item, e);
-
-			if (item instanceof ConfigProcessDate)
-				r = processDate.process((ConfigProcessDate) item, e);
-
-			if (item instanceof ConfigProcessMetrics) {
-				r = processMetrics.process((ConfigProcessMetrics) item, e);
-				out = null;
-			}
-
-//			if (r != true)
-//				return;
-		} */
 //		logger.debug("ProcessProcessor.process() end");
 		return null;
 	}

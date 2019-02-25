@@ -7,7 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skp.kafkaalert.config.Config;
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.LogEvent;
+
 import lombok.Data;
 
 @Data

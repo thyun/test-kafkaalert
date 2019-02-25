@@ -10,12 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skp.kafkaalert.config.CommonFieldValue;
 import com.skp.kafkaalert.config.ConfigProcess;
 import com.skp.kafkaalert.datastore.AlarmMetaDatastore;
+import com.skp.kafkaalert.datastore.AlarmStatsDatastore;
 import com.skp.kafkaalert.datastore.AlarmStatusDatastore;
-import com.skp.kafkaalert.event.Alarm;
-import com.skp.kafkaalert.event.AlarmLookup;
-import com.skp.kafkaalert.event.AlarmRule;
-import com.skp.kafkaalert.event.AlarmStatus;
-import com.skp.kafkaalert.event.LogEvent;
+import com.skp.kafkaalert.entity.Alarm;
+import com.skp.kafkaalert.entity.AlarmFieldKey;
+import com.skp.kafkaalert.entity.AlarmRule;
+import com.skp.kafkaalert.entity.AlarmStatus;
+import com.skp.kafkaalert.entity.AlarmValueKey;
+import com.skp.kafkaalert.entity.LogEvent;
 
 public class ProcessAlarm {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -51,7 +53,7 @@ public class ProcessAlarm {
 	}
 
 	// Inequality: ">", ">=", "<", "<="
-	// TODO double 지원
+	// TODO Support double
 	private boolean isOn(ConfigProcess cprocess, LogEvent e, Alarm alarm, AlarmRule rule) {
 		CommonFieldValue fv = alarm.getScheme().getValue();
 		long value = e.getLong(fv.getField());
@@ -75,8 +77,10 @@ public class ProcessAlarm {
 		// TODO Generate ON event
 		status.addRepeat();
 		AlarmStatus.Action action = status.getAction(rule);
-		if (action != AlarmStatus.Action.NONE)
+		if (action != AlarmStatus.Action.NONE) {
 			logger.debug("ALARM " + action + ": key=" + key);
+			AlarmStatsDatastore.getInstance().count(action);
+		}
 	}
 
 	private void processOff(ConfigProcess cprocess, LogEvent e, Alarm alarm, AlarmRule rule) {
@@ -88,54 +92,21 @@ public class ProcessAlarm {
 
 		// TODO Generate OFF event
 		logger.debug("ALARM " + AlarmStatus.Action.OFF + ": key=" + key);
+		AlarmStatsDatastore.getInstance().count(AlarmStatus.Action.OFF);
 	}
 
-	// TODO 구현
 	private List<Alarm> lookupAlarms(ConfigProcess cprocess, LogEvent e) {
 		ArrayList<Alarm> alarms = new ArrayList<>();
 
-		// Field keys
-		for (AlarmLookup lookup: AlarmMetaDatastore.getInstance().getLookupList()) {
-			if (lookup.hasFields(e)) {
-				String valueKey = lookup.getValueKey(e);
-				Alarm alarm = AlarmMetaDatastore.getInstance().getAlarmMap().get(valueKey);
+		for (AlarmFieldKey fieldKey: AlarmMetaDatastore.getInstance().getFieldKeyList()) {
+			if (fieldKey.hasFields(e)) {
+				AlarmValueKey valueKey = fieldKey.getValueKey(e);
+				Alarm alarm = AlarmMetaDatastore.getInstance().getAlarmMap().get(valueKey.getKey());
 				if (alarm != null)
 					alarms.add(alarm);
 			}
 		}
-
-/*		if (!e.has("collectd_type"))
-			return alarms;
-		if (!e.getString("collectd_type").equals("if_octets"))
-			return alarms;
-
-		Alarm alarm = Alarm.create(cprocess.getAlarms().get(1));
-//		Object o = cprocess.getAlarms().get(1);
-//		Alarm alarm = objectMapper.convertValue(o, Alarm.class);
-
-		CommonFieldValue fv = alarm.getScheme().getInstance();
-		String instance = fv.getValue();
-		if (instance.equals(e.getString(fv.getField()))
-				&& e.getString("host").startsWith("SMONi-web"))
-			alarms.add(alarm); */
 		return alarms;
 	}
-
-	// TODO multiple scheme 지원하도록 개선
-//	public List<ProcessScheme> lookupProcessSchemes(ConfigProcess cprocess, LogEvent e) {
-//		return null;
-/*		ArrayList<ProcessScheme> pschemes = new ArrayList<>();
-		ConfigScheme cscheme = cprocess.getScheme();
-
-		// Check if all scheme metrics fields exist
-		List<CommonFieldValue> fvList = cscheme.getMetrics();
-		for (CommonFieldValue fv: fvList) {
-			if (e.isNull(fv.getField()))
-				return pschemes;
-		}
-		pschemes.add(new ProcessScheme(cscheme));
-		return pschemes; */
-//	}
-
 
 }

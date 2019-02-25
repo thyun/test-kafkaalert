@@ -11,7 +11,6 @@ import com.skp.kafkaalert.config.Config;
 import com.skp.kafkaalert.config.ConfigPath;
 import com.skp.kafkaalert.input.InputProcessor;
 import com.skp.kafkaalert.output.OutputProcessor;
-import com.skp.kafkaalert.process.ProcessMetricsService;
 import com.skp.kafkaalert.process.ProcessProcessor;
 
 @SpringBootApplication
@@ -86,8 +85,8 @@ public class MainApplication {
 		pprocessor.setOutputProcessor(oprocessor);
 
 		// Set ProcessMetricsService
-		ProcessMetricsService pms = (ProcessMetricsService) ctx.getBean("processMetricsService");
-		pms.setOutputProcessor(oprocessor);
+//		ProcessMetricsService pms = (ProcessMetricsService) ctx.getBean("processMetricsService");
+//		pms.setOutputProcessor(oprocessor);
 	}
 
 	private void startOutput() {

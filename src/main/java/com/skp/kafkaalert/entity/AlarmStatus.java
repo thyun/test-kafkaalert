@@ -1,4 +1,4 @@
-package com.skp.kafkaalert.event;
+package com.skp.kafkaalert.entity;
 
 import java.util.Date;
 
@@ -10,6 +10,10 @@ public class AlarmStatus {
 	int repeat = 0;
 	Date startTime = new Date();
 
+	public enum Action {
+		NONE, ON, REMIND, OFF
+	}
+
 	public class AlarmFinal {
 		int action;
 	}
@@ -18,9 +22,6 @@ public class AlarmStatus {
 		repeat++;
 	}
 
-	public enum Action {
-		NONE, ON, REMIND, OFF
-	}
 	public Action getAction(AlarmRule rule) {
 		if (repeat < rule.getConsecutive())
 			return Action.NONE;

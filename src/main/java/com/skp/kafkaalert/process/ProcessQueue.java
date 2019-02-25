@@ -4,8 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.skp.kafkaalert.event.LogEvent;
-
+import com.skp.kafkaalert.entity.LogEvent;
 import lombok.Getter;
 
 @Getter
@@ -13,7 +12,7 @@ public class ProcessQueue extends LinkedBlockingQueue<List<LogEvent>> {
 	private static final long serialVersionUID = 2418692025826323462L;
 	final static int QUEUE_SIZE = 1000;
 	static ProcessQueue processQueue = null;
-	
+
 	public ProcessQueue(int queueSize) {
 		super(queueSize);
 	}
@@ -24,7 +23,7 @@ public class ProcessQueue extends LinkedBlockingQueue<List<LogEvent>> {
 		}
 		return processQueue;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ProcessQueue: ");

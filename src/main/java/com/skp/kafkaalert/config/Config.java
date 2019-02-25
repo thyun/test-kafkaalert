@@ -1,20 +1,23 @@
 package com.skp.kafkaalert.config;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skp.kafkaalert.event.LogEvent;
-import com.skp.kafkaalert.process.ProcessScheme;
+import com.skp.kafkaalert.MainApplication;
+import com.skp.util.CommonHelper;
 import com.skp.util.FileHelper;
 
 import lombok.Data;
 
 @Data
 public class Config {
+	private static final Logger logger = LoggerFactory.getLogger(Config.class);
 	static ObjectMapper objectMapper = new ObjectMapper();
 
 	ConfigRegex regex;
@@ -33,15 +36,8 @@ public class Config {
 			Config config = objectMapper.readValue(processConfStr, Config.class);
 			config.setRegex(ConfigRegex.create(regexConfStrList));
 			return config;
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException e) {	// JsonParseException, JsonMappingException or IOException
+			logger.error(CommonHelper.exception2Str(e));
 		}
 		return null;
 	}
@@ -65,15 +61,8 @@ public class Config {
 			Config config = objectMapper.readValue(processConfStr, Config.class);
 			config.setRegex(ConfigRegex.create(regexConfStrList));
 			return config;
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException e) {	// JsonParseException, JsonMappingException or IOException
+			logger.error(CommonHelper.exception2Str(e));
 		}
 		return null;
 	}

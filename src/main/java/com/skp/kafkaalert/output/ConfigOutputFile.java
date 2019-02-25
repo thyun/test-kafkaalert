@@ -1,20 +1,15 @@
 package com.skp.kafkaalert.output;
 
-import org.json.JSONObject;
-
-import com.skp.kafkaalert.config.ConfigItem;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@AllArgsConstructor
+//@AllArgsConstructor
 @Data
-public class ConfigOutputFile implements ConfigItem {
+public class ConfigOutputFile {
 	String type;
 	String path;
 	int max;
 
-	public ConfigOutputFile(JSONObject j) {
+/*	public ConfigOutputFile(JSONObject j) {
 		init(j);
 	}
 
@@ -29,6 +24,6 @@ public class ConfigOutputFile implements ConfigItem {
 	@Override
 	public void prepare() {
 
-	}
+	} */
 
 }

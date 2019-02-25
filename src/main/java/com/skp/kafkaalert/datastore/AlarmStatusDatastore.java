@@ -6,8 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.skp.kafkaalert.event.AlarmStatus;
-import com.skp.kafkaalert.event.MetricEvent;
+import com.skp.kafkaalert.entity.AlarmStatus;
 import com.skp.util.CommonHelper;
 
 import lombok.Data;

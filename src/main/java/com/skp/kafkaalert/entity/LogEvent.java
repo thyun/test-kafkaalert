@@ -1,4 +1,4 @@
-package com.skp.kafkaalert.event;
+package com.skp.kafkaalert.entity;
 
 import java.util.Date;
 

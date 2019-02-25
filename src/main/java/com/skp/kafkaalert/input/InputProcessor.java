@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skp.kafkaalert.config.Config;
-import com.skp.kafkaalert.config.ConfigItem;
 import com.skp.kafkaalert.input.kafka.ConfigInputKafka;
 import com.skp.kafkaalert.input.kafka.InputKafka;
 

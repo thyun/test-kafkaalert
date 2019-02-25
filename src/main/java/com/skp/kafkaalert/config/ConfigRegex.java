@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.skp.kafkaalert.event.KeyValue;
 import com.skp.util.FileHelper;
 
 import lombok.Getter;
@@ -31,8 +30,8 @@ public class ConfigRegex extends HashMap<String, String> {
 			String key, value;
 			key = line.substring(0, index).trim();
 			value = line.substring(index+1).trim();
-			return new KeyValue(key, value);
-		}).collect(Collectors.toMap(KeyValue::getKey, KeyValue::getValue));
+			return new CommonFieldValue(key, value);
+		}).collect(Collectors.toMap(CommonFieldValue::getField, CommonFieldValue::getValue));
 		return new ConfigRegex(map);
 	}
 
