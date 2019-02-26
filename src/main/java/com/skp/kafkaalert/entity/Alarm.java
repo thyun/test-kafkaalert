@@ -1,8 +1,10 @@
 package com.skp.kafkaalert.entity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skp.kafkaalert.config.CommonFieldValue;
 
 import lombok.Data;
 
@@ -14,6 +16,7 @@ public class Alarm {
 	String display_name;
 	int is_used;
 	AlarmScheme scheme;
+	List<List<CommonFieldValue>> targets;
 	ArrayList<AlarmRule> rules;
 	Object notifications;
 	Object notification_groups;

@@ -1,5 +1,6 @@
 package com.skp.kafkaalert.entity;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.json.JSONObject;

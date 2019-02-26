@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class AlarmStatus {
 	String key;
-	int repeat = 0;
+	int continuous = 0;
 	Date startTime = new Date();
 
 	public enum Action {
@@ -18,16 +18,16 @@ public class AlarmStatus {
 		int action;
 	}
 
-	public void addRepeat() {
-		repeat++;
+	public void addContinuous() {
+		continuous++;
 	}
 
 	public Action getAction(AlarmRule rule) {
-		if (repeat < rule.getConsecutive())
+		if (continuous < rule.getConsecutive())
 			return Action.NONE;
-		else if (repeat == rule.getConsecutive())
+		else if (continuous == rule.getConsecutive())
 			return Action.ON;
-		else if ((repeat-rule.getConsecutive()) % rule.getRemind() == 0)
+		else if ((continuous-rule.getConsecutive()) % rule.getRemind() == 0)
 			return Action.REMIND;
 		return Action.NONE;
 	}

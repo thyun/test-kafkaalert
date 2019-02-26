@@ -29,11 +29,16 @@ public class ProcessQueueGenerator {
 		List<LogEvent> elist = new ArrayList<>();
 
 		// Make LogEvent list
-		JSONArray ja = new JSONArray(line);
-		for (int i=0; i<ja.length(); i ++) {
-			JSONObject jo = ja.getJSONObject(i);
-			elist.add(new LogEvent(jo.toString()));
-		}
+		if (line.startsWith("[")) {
+			JSONArray ja = new JSONArray(line);
+			for (int i=0; i<ja.length(); i ++) {
+				JSONObject jo = ja.getJSONObject(i);
+				elist.add(new LogEvent(jo.toString()));
+			}
+		} else if (line.startsWith("{")) {
+			elist.add(new LogEvent(line));
+		} else
+			logger.error("generateLogEventList(); Invalid line: " + line);
 
 		// Put to queue
 		try {

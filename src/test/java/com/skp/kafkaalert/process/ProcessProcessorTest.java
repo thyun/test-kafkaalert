@@ -21,6 +21,7 @@ import com.skp.kafkaalert.entity.LogEvent;
 import com.skp.kafkaalert.generator.ProcessQueueGenerator;
 import com.skp.kafkaalert.process.ProcessProcessor;
 import com.skp.kafkaalert.process.ProcessQueue;
+import com.skp.util.FileHelper;
 
 public class ProcessProcessorTest {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessProcessorTest.class);
@@ -50,7 +51,7 @@ public class ProcessProcessorTest {
 	    pprocess.init();
 
 		// Generate sample system metric and process
-		ProcessQueueGenerator.generateSampleMetric("sample-system-metric.log");
+		ProcessQueueGenerator.generateSampleMetric("sample.log");
 		int size = ProcessQueue.getInstance().size();
 		for (int i=0; i<size; i++)
 			pprocess.process();
@@ -67,6 +68,42 @@ public class ProcessProcessorTest {
 		ProcessMetricsService service = new ProcessMetricsService();
 	    service.export(0);
 	    service.export(0); */
+	}
+
+	@Test
+	public void testAccessMetric() throws IOException, ParseException {
+		// Get config
+		Config config = Config.createFromResource("process-access.conf", "regex.conf");
+		AlarmMetaDatastore.getInstance().build(config.getProcess());
+
+		// Create ProcessProcessor
+	    ProcessProcessor pprocess = new ProcessProcessor(config);
+	    pprocess.init();
+
+		// Generate sample system metric and process
+		ProcessQueueGenerator.generateSampleMetric("sample-access.log");
+		int size = ProcessQueue.getInstance().size();
+		for (int i=0; i<size; i++)
+			pprocess.process();
+		logger.debug("Processed queue size=" + size);
+	}
+
+	@Test
+	public void testPatternMetric() throws IOException, ParseException {
+		// Get config
+		Config config = Config.createFromResource("process-pattern.conf", "regex.conf");
+		AlarmMetaDatastore.getInstance().build(config.getProcess());
+
+		// Create ProcessProcessor
+	    ProcessProcessor pprocess = new ProcessProcessor(config);
+	    pprocess.init();
+
+		// Generate sample system metric and process
+		ProcessQueueGenerator.generateSampleMetric("sample-pattern.log");
+		int size = ProcessQueue.getInstance().size();
+		for (int i=0; i<size; i++)
+			pprocess.process();
+		logger.debug("Processed queue size=" + size);
 	}
 
 }
